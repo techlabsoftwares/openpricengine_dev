@@ -1,0 +1,44 @@
+import requests
+
+url = 'https://openpricengine.com/api/v0.2/all/query'
+headers = {
+    'accept': 'application/json',
+    'Authorization': 'API-KEY'
+}
+params = {
+    'stores': 'spar',
+    'productname': 'chicken',
+    'range': '2023-01-04to2023-08-04',
+    'currency': 'Default'
+}
+
+response = requests.get(url, headers=headers, params=params)
+
+if response.status_code == 200:
+    data = response.json()
+    # Process the data as needed
+else:
+    print(f"Request failed with status code: {response.status_code}")
+    print(response.text)
+
+#================PLOT ==================
+
+import plotly.express as px
+import pandas as pd
+
+
+
+# Convert the "Price over time" data into a DataFrame
+price_data = pd.DataFrame(data[0]["Price over time"])
+
+# Convert the "Date" column to datetime
+price_data["Date"] = pd.to_datetime(price_data["Date"])
+
+# Create the plot using Plotly Express
+fig = px.line(price_data, x="Date", y="Price", title="Price Over Time for SPAR IQF MIXED CHICKEN PORTIONS 2KG")
+fig.update_xaxes(title_text="Date")
+fig.update_yaxes(title_text="Price (ZAR)")
+
+# Show the plot
+fig.show()
+
